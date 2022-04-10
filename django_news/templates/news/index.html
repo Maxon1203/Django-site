@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+    <h3 class="text-center">Статьи:</h3>
+    <div class = "container">
+        {% for post in posts_var %}
+            <section>
+                <div class=""></div>
+                <div class="card col-8 justify-content-center">
+                    <h5 class="card-header">{{  post.author }}, {{ post.pub_date }}</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">Титле : {{ post.title }}</h5>
+                        <p class="card-text">
+                            {{ post.text }}
+                        </p>
+                        <p class="card-text ">
+                            {% for tag in post.tag_state.all %}
+                                Тэг:
+                                <a class="text-primary">{{ tag.text }}</a>
+                            {% endfor %}
+                        </p>
+                        <a href="{% url 'post_detail_url' post.id %}" class="btn btn-primary">Детальнее</a>
+                        <a href="{{ post.get_delete_url }}" class="btn btn-primary">Удалить</a>
+                        <a href="{{ post.get_update_url }}" class="btn btn-primary">Изменить</a>
+                    </div>
+                </div>
+            </section>
+        {% endfor %}
+        {% if is_paginated %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not prev_url %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="{{ prev_url }}"
+                           tabindex="-1"
+                           aria-disabled="true">Назад</a>
+                    </li>
+                    {% for i in posts_var.paginator.page_range %}
+                        {% if posts_var.number == i %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{i}}">{{i }}<span class="sr-only"></span></a>
+                            </li>
+                        {% elif i > posts_var.number|add:-1 and i < posts_var.number|add:2 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{i}}">{{i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not next_url %} disabled{% endif %}">
+                        <a class="page-link" href="{{ next_url }}">Вперед</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+    <h3 class="text-center">Теги:</h3>
+{% endblock content %}

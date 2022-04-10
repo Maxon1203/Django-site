@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card text-center">
+        <div class="card-header">{{ post.author }}</div>
+        {% for tag in post.tag_state.all %}
+            Тэг:
+            <a class="text-primary">{{ tag.text }}</a>
+        {% endfor %}
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}, {{ comment.tag }}</h5>
+            <p class="card-text">
+                {{ post.text }}
+            </p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+        <div class="card-footer text-muted">{{ post.pub_date }}</div>
+    </div>
+    <div>
+        <h5>Комментарии:</h5>
+        {% for comment in comments  %}
+            <div class="card border-dark mb-3" style="max-width: 18rem;">
+                <div class="card-header">
+                    {% if perms.comment.can_see_author %}
+                        {{ comment.author }},
+                    {% else %}
+                        Аноним
+                    {% endif %}
+                    {{ comment.pub_date }}, {{ comment.tag }}
+                </div>
+                <div class="card-body text-dark">
+                    <p class="card-text">
+                        {{ comment.text }}
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+        {% if is_paginated %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not prev_url %} disabled{% endif %}">
+                        <a class="page-link"
+                           href="{{ prev_url }}"
+                           tabindex="-1"
+                           aria-disabled="true">Назад</a>
+                    </li>
+                    {% for i in comments.paginator.page_range %}
+                        {% if comments.number == i %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="?page={{i}}">{{i }}<span class="sr-only"></span></a>
+                            </li>
+                        {% elif i > comments.number|add:-3 and i < comments.number|add:3 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{i}}">{{i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not next_url %} disabled{% endif %}">
+                        <a class="page-link" href="{{ next_url }}">Вперед</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <form action="{% url 'add_comment_url' post.id %}" method="post">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit"
+                       class="btn btn-primary mt-3"
+                       value="оставить коментарий">
+            </form>
+        </div>
+    </div>
+{% endblock content %}

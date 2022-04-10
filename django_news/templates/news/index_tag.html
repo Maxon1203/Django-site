@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+    <h3 class="text-center">Теги:</h3>
+    <div class = "container">
+        <div>
+            {% for tag in page_tags %}
+                <section>
+                    <div class=""></div>
+                    <div class="card col-8 justify-content-center">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tag.title }}</h5>
+                            <p class="card-text">
+                                {{ tag.text }}
+                            </p>
+                            <a href="{{ tag.get_update_url }}" class="btn btn-success">Изменить</a>
+                            <a href="{{ tag.get_delete_url }}" class="btn btn-dark">удалить</a>
+                        </div>
+                    </div>
+                </section>
+            {% endfor %}
+            {% if is_paginated %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item {% if not prev_url %} disabled{% endif %}">
+                            <a class="page-link"
+                               href="{{ prev_url }}"
+                               tabindex="-1"
+                               aria-disabled="true">Назад</a>
+                        </li>
+                        {% for i in page_tags.paginator.page_range %}
+                            {% if page_tags.number == i %}
+                                <li class="page-item active" aria-current="page">
+                                    <a class="page-link" href="?page={{i}}">{{i }}<span class="sr-only"></span></a>
+                                </li>
+                            {% elif i > page_tags.number|add:-1 and i < page_tags.number|add:3 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{i}}">{{i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        <li class="page-item {% if not next_url %} disabled{% endif %}">
+                            <a class="page-link" href="{{ next_url }}">Вперед</a>
+                        </li>
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+{% endblock content %}
